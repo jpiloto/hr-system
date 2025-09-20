@@ -2,6 +2,7 @@ package com.hrapp.hrsystem.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "employees")
@@ -17,7 +18,10 @@ public class Employee {
 
     private String name;
 
-    private String department;
-
     private String email;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    @JsonIgnoreProperties("employees")
+    private Department department;
 }

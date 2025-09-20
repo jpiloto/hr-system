@@ -2,8 +2,10 @@ package com.hrapp.hrsystem.config;
 
 import com.hrapp.hrsystem.model.User;
 import com.hrapp.hrsystem.model.Employee;
+import com.hrapp.hrsystem.model.Department;
 import com.hrapp.hrsystem.repository.UserRepository;
 import com.hrapp.hrsystem.repository.EmployeeRepository;
+import com.hrapp.hrsystem.repository.DepartmentRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,7 @@ public class DataSeeder {
     @Bean
     public CommandLineRunner seedData(UserRepository userRepository,
                                       EmployeeRepository employeeRepository,
+                                      DepartmentRepository departmentRepository,
                                       PasswordEncoder passwordEncoder) {
         return args -> {
             // Seed test user
@@ -37,24 +40,29 @@ public class DataSeeder {
                 userRepository.save(admin);
             }
 
+            // Seed departments
+            Department engineering = departmentRepository.save(Department.builder().name("Engineering").build());
+            Department hr = departmentRepository.save(Department.builder().name("Human Resources").build());
+            Department finance = departmentRepository.save(Department.builder().name("Finance").build());
+
             // Seed employees
             if (employeeRepository.count() == 0) {
                 employeeRepository.save(Employee.builder()
                         .name("Alice Johnson")
-                        .department("Engineering")
                         .email("alice@company.com")
+                        .department(engineering)
                         .build());
 
                 employeeRepository.save(Employee.builder()
                         .name("Bob Smith")
-                        .department("Human Resources")
                         .email("bob@company.com")
+                        .department(hr)
                         .build());
 
                 employeeRepository.save(Employee.builder()
                         .name("Charlie Nguyen")
-                        .department("Finance")
                         .email("charlie@company.com")
+                        .department(finance)
                         .build());
             }
         };

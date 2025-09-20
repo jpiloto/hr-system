@@ -3,10 +3,16 @@ package com.hrapp.hrsystem.dto;
 import lombok.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class EmployeeDTO {
+
+    private Long id;
     private String name;
-    private String department;
     private String email;
+
+    // Flattened department info
+    private Long departmentId;
+    private String departmentName;
 }

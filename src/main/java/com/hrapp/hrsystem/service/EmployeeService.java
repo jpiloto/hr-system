@@ -19,7 +19,14 @@ public class EmployeeService {
 
     public List<EmployeeDTO> getAllEmployees() {
         return employeeRepository.findAll().stream()
-                .map(emp -> new EmployeeDTO(emp.getName(), emp.getDepartment(), emp.getEmail()))
+                .map(emp -> EmployeeDTO.builder()
+                        .id(emp.getId())
+                        .name(emp.getName())
+                        .email(emp.getEmail())
+                        .departmentId(emp.getDepartment() != null ? emp.getDepartment().getId() : null)
+                        .departmentName(emp.getDepartment() != null ? emp.getDepartment().getName() : null)
+                        .build())
                 .collect(Collectors.toList());
     }
+
 }
