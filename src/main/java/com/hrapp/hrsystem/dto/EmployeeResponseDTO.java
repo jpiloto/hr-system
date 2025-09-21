@@ -26,4 +26,6 @@ public class EmployeeResponseDTO {
     private Long departmentId;
 
     private Set<Long> roleIds;
+
+    private String jobPositionTitle;
 }

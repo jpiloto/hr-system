@@ -56,4 +56,9 @@ public class Employee {
     )
     @JsonIgnoreProperties("employees")
     private Set<Role> roles = new HashSet<>();
+
+    @NotNull(message = "Job position is required")
+    @ManyToOne
+    @JoinColumn(name = "job_position_id", nullable = false)
+    private JobPosition jobPosition;
 }

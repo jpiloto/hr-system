@@ -1,11 +1,13 @@
 package com.hrapp.hrsystem.config;
 
+import com.hrapp.hrsystem.model.JobPosition;
 import com.hrapp.hrsystem.model.User;
 import com.hrapp.hrsystem.model.Employee;
 import com.hrapp.hrsystem.model.Department;
 import com.hrapp.hrsystem.repository.UserRepository;
 import com.hrapp.hrsystem.repository.EmployeeRepository;
 import com.hrapp.hrsystem.repository.DepartmentRepository;
+import com.hrapp.hrsystem.repository.JobPositionRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,7 @@ public class DataSeeder {
     public CommandLineRunner seedData(UserRepository userRepository,
                                       EmployeeRepository employeeRepository,
                                       DepartmentRepository departmentRepository,
+                                      JobPositionRepository jobPositionRepository,
                                       PasswordEncoder passwordEncoder) {
         return args -> {
             // Seed test user
@@ -47,6 +50,29 @@ public class DataSeeder {
             Department hr = departmentRepository.save(Department.builder().name("Human Resources").build());
             Department finance = departmentRepository.save(Department.builder().name("Finance").build());
 
+            // Seed job positions
+            JobPosition softwareEngineer = jobPositionRepository.save(
+                    JobPosition.builder()
+                            .title("Software Engineer")
+                            .description("Develops and maintains backend systems")
+                            .build()
+            );
+
+            JobPosition hrSpecialist = jobPositionRepository.save(
+                    JobPosition.builder()
+                            .title("HR Specialist")
+                            .description("Manages employee relations and recruitment")
+                            .build()
+            );
+
+            JobPosition financialAnalyst = jobPositionRepository.save(
+                    JobPosition.builder()
+                            .title("Financial Analyst")
+                            .description("Analyzes financial data and prepares reports")
+                            .build()
+            );
+
+
             // Seed employees
             if (employeeRepository.count() == 0) {
                 employeeRepository.save(Employee.builder()
@@ -56,6 +82,7 @@ public class DataSeeder {
                         .hireDate(LocalDate.of(2022, 5, 10))
                         .phoneNumber("+1 (555) 123-4567")
                         .department(engineering)
+                        .jobPosition(softwareEngineer)
                         .build());
 
                 employeeRepository.save(Employee.builder()
@@ -65,6 +92,7 @@ public class DataSeeder {
                         .hireDate(LocalDate.of(2021, 3, 15))
                         .phoneNumber("+1 (555) 987-6543")
                         .department(hr)
+                        .jobPosition(hrSpecialist)
                         .build());
 
                 employeeRepository.save(Employee.builder()
@@ -74,6 +102,7 @@ public class DataSeeder {
                         .hireDate(LocalDate.of(2023, 1, 20))
                         .phoneNumber("+1 (555) 555-1212")
                         .department(finance)
+                        .jobPosition(financialAnalyst)
                         .build());
             }
         };

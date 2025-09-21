@@ -35,4 +35,6 @@ public class EmployeeRequestDTO {
     private Long departmentId;
 
     private Set<Long> roleIds;
+
+    private Long jobPositionId;
 }
