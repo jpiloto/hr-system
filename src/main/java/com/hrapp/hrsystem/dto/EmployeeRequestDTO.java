@@ -10,9 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EmployeeDTO {
-
-    private Long id; // included for output; ignored on input
+public class EmployeeRequestDTO {
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -36,5 +34,5 @@ public class EmployeeDTO {
     @NotNull(message = "Department ID is required")
     private Long departmentId;
 
-    private Set<Long> roleIds; // optional for input; populated on output
+    private Set<Long> roleIds;
 }

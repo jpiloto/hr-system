@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
+
 @Configuration
 public class DataSeeder {
 
@@ -50,18 +52,27 @@ public class DataSeeder {
                 employeeRepository.save(Employee.builder()
                         .name("Alice Johnson")
                         .email("alice@company.com")
+                        .jobTitle("Software Engineer")
+                        .hireDate(LocalDate.of(2022, 5, 10))
+                        .phoneNumber("+1 (555) 123-4567")
                         .department(engineering)
                         .build());
 
                 employeeRepository.save(Employee.builder()
                         .name("Bob Smith")
                         .email("bob@company.com")
+                        .jobTitle("HR Specialist")
+                        .hireDate(LocalDate.of(2021, 3, 15))
+                        .phoneNumber("+1 (555) 987-6543")
                         .department(hr)
                         .build());
 
                 employeeRepository.save(Employee.builder()
                         .name("Charlie Nguyen")
                         .email("charlie@company.com")
+                        .jobTitle("Financial Analyst")
+                        .hireDate(LocalDate.of(2023, 1, 20))
+                        .phoneNumber("+1 (555) 555-1212")
                         .department(finance)
                         .build());
             }

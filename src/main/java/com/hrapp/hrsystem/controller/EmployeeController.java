@@ -1,7 +1,10 @@
 package com.hrapp.hrsystem.controller;
 
-import com.hrapp.hrsystem.dto.EmployeeDTO;
+import com.hrapp.hrsystem.dto.EmployeeRequestDTO;
+import com.hrapp.hrsystem.dto.EmployeeResponseDTO;
 import com.hrapp.hrsystem.service.EmployeeService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,11 +24,33 @@ public class EmployeeController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<EmployeeDTO> getEmployees() {
+    public List<EmployeeResponseDTO> getEmployees() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("Authenticated user: " + auth.getName());
         System.out.println("Authorities: " + auth.getAuthorities());
 
         return employeeService.getAllEmployees();
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public EmployeeResponseDTO createEmployee(@Valid @RequestBody EmployeeRequestDTO requestDTO) {
+        return employeeService.createEmployee(requestDTO);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(
+            @PathVariable Long id,
+            @Valid @RequestBody EmployeeRequestDTO requestDTO) {
+        EmployeeResponseDTO updated = employeeService.updateEmployee(id, requestDTO);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
+        return ResponseEntity.noContent().build();
     }
 }
