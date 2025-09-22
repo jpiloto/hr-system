@@ -1,22 +1,24 @@
 package com.hrapp.hrsystem.config;
 
-import com.hrapp.hrsystem.model.JobPosition;
-import com.hrapp.hrsystem.model.User;
-import com.hrapp.hrsystem.model.Employee;
-import com.hrapp.hrsystem.model.Department;
-import com.hrapp.hrsystem.repository.UserRepository;
-import com.hrapp.hrsystem.repository.EmployeeRepository;
-import com.hrapp.hrsystem.repository.DepartmentRepository;
-import com.hrapp.hrsystem.repository.JobPositionRepository;
+import com.hrapp.hrsystem.model.*;
+import com.hrapp.hrsystem.repository.*;
+import jakarta.annotation.PostConstruct;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Configuration
 public class DataSeeder {
+
+    private final RoleRepository roleRepository;
+
+    public DataSeeder(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     @Bean
     public CommandLineRunner seedData(UserRepository userRepository,
@@ -72,7 +74,6 @@ public class DataSeeder {
                             .build()
             );
 
-
             // Seed employees
             if (employeeRepository.count() == 0) {
                 employeeRepository.save(Employee.builder()
@@ -106,5 +107,19 @@ public class DataSeeder {
                         .build());
             }
         };
+    }
+
+    @PostConstruct
+    public void seedRoles() {
+        List<String> defaultRoles = List.of("ADMIN", "HR_MANAGER", "EMPLOYEE");
+
+        for (String roleName : defaultRoles) {
+            if (!roleRepository.existsByName(roleName)) {
+                Role role = new Role();
+                role.setName(roleName);
+                roleRepository.save(role);
+                System.out.println("Seeded role: " + roleName);
+            }
+        }
     }
 }

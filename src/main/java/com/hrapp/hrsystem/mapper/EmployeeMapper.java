@@ -82,4 +82,25 @@ public abstract class EmployeeMapper {
 
         return employee;
     }
+
+    public Employee toEntity(EmployeeRequestDTO dto, JobPosition jobPosition) {
+        Employee employee = new Employee();
+        employee.setName(dto.getName());
+        employee.setEmail(dto.getEmail());
+        employee.setJobTitle(dto.getJobTitle());
+        employee.setHireDate(dto.getHireDate());
+        employee.setPhoneNumber(dto.getPhoneNumber());
+        employee.setDepartment(departmentRepository.findById(dto.getDepartmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found")));
+
+        Set<Role> roles = dto.getRoleIds().stream()
+                .map(id -> roleRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Role not found with id " + id)))
+                .collect(Collectors.toSet());
+        employee.setRoles(roles);
+
+        employee.setJobPosition(jobPosition);
+        return employee;
+    }
+
 }

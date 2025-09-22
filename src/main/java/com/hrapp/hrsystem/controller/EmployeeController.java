@@ -4,6 +4,7 @@ import com.hrapp.hrsystem.dto.EmployeeRequestDTO;
 import com.hrapp.hrsystem.dto.EmployeeResponseDTO;
 import com.hrapp.hrsystem.service.EmployeeService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -34,8 +35,9 @@ public class EmployeeController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public EmployeeResponseDTO createEmployee(@Valid @RequestBody EmployeeRequestDTO requestDTO) {
-        return employeeService.createEmployee(requestDTO);
+    public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO dto) {
+        EmployeeResponseDTO created = employeeService.createEmployee(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
