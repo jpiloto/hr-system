@@ -12,3 +12,7 @@ RUN ./mvnw clean package -DskipTests
 
 # Run the application
 CMD ["java", "-jar", "target/hr-system-0.0.1-SNAPSHOT.jar"]
+
+#./mvnw clean package
+#docker build -t hr-system .
+#docker run -p 8080:8080 hr-system
