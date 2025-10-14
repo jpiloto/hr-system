@@ -16,7 +16,7 @@ public class EmployeeEventProducer {
     public void sendEmployeeCreatedEvent(EmployeeCreatedEvent event) {
         try {
             String message = objectMapper.writeValueAsString(event);
-            kafkaTemplate.send("employee.lifecycle.created", message);
+            kafkaTemplate.send("employee.created", message);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to serialize event", e);
         }
