@@ -6,7 +6,9 @@ import com.hrapp.hrsystem.event.EmployeeCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.kafka.core.KafkaTemplate;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmployeeEventProducer {
@@ -17,6 +19,7 @@ public class EmployeeEventProducer {
         try {
             String message = objectMapper.writeValueAsString(event);
             kafkaTemplate.send("employee.created", message);
+            log.info("Published employee.created event: {}", message);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to serialize event", e);
         }

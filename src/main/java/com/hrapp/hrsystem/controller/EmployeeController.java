@@ -45,8 +45,14 @@ public class EmployeeController {
 
         EmployeeCreatedEvent event = new EmployeeCreatedEvent(
                 created.getId(),
+                created.getName(),
+                created.getEmail(),
+                created.getJobTitle(),
+                created.getPhoneNumber(),
+                created.getHireDate(),
                 created.getDepartmentId(),
-                created.getHireDate()
+                created.getRoleIds(),
+                created.getJobPositionTitle()
         );
 
         eventProducer.sendEmployeeCreatedEvent(event);
