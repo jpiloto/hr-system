@@ -14,12 +14,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.awaitility.Awaitility.await;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Configuration
@@ -30,6 +34,8 @@ public class DataSeeder {
     private final EmployeeEventProducer eventProducer;
     private final EmployeeService employeeService;
     private final EmployeeCreatedEventMapper eventMapper;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
 
     @Bean
     @Transactional
@@ -37,8 +43,32 @@ public class DataSeeder {
                                       EmployeeRepository employeeRepository,
                                       DepartmentRepository departmentRepository,
                                       JobPositionRepository jobPositionRepository,
-                                      PasswordEncoder passwordEncoder) {
+                                      PasswordEncoder passwordEncoder,
+                                      KafkaTemplate<String, String> kafkaTemplate) {
         return args -> {
+
+            // Wait until Kafka is ready (e.g., topic exists or producer can send)
+//            await()
+//                    .atMost(10, TimeUnit.SECONDS)
+//                    .pollInterval(1, TimeUnit.SECONDS)
+//                    .until(() -> kafkaTemplate != null && kafkaTemplate.getProducerFactory() != null);
+
+            await()
+                    .atMost(10, TimeUnit.SECONDS)
+                    .pollInterval(1, TimeUnit.SECONDS)
+                    .until(() -> {
+                        try {
+                            kafkaTemplate.send("employee.created", "ping").get();
+                            return true;
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    });
+
+            log.info("Kafka is ready. Proceeding with data seeding...");
+
+
+
             // Seed test user
             if (userRepository.findByUsername("testuser").isEmpty()) {
                 User user = User.builder()
