@@ -146,7 +146,7 @@ public class DataSeeder {
                                 LocalDate.of(2023, 1, 20),
                                 "+1 (555) 555-1212",
                                 finance.getId(),
-                                Set.of(4L),
+                                Set.of(3L),
                                 financialAnalyst.getId()
                         )
                 );
