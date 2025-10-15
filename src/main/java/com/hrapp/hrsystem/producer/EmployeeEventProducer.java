@@ -18,6 +18,7 @@ public class EmployeeEventProducer {
     public void sendEmployeeCreatedEvent(EmployeeCreatedEvent event) {
         try {
             String message = objectMapper.writeValueAsString(event);
+            log.info("BEFORE-Published employee.created event: {}", message);
             kafkaTemplate.send("employee.created", message);
             log.info("Published employee.created event: {}", message);
         } catch (JsonProcessingException e) {
