@@ -20,6 +20,6 @@ public class EmployeeCreatedEvent {
     private Long departmentId;
     private Set<Long> roleIds;
     private String jobPositionTitle;
-
+    private Integer jobPositionLevel;
 }
 

@@ -28,4 +28,6 @@ public class EmployeeResponseDTO {
     private Set<Long> roleIds;
 
     private String jobPositionTitle;
+
+    private Integer jobPositionLevel;
 }

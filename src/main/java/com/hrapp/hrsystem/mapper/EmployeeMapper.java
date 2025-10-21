@@ -32,6 +32,7 @@ public abstract class EmployeeMapper {
     @Mapping(source = "department.id", target = "departmentId")
     @Mapping(target = "roleIds", expression = "java(mapRoleIds(employee.getRoles()))")
     @Mapping(source = "jobPosition.title", target = "jobPositionTitle")
+    @Mapping(source = "jobPosition.level", target = "jobPositionLevel")
     public abstract EmployeeResponseDTO toResponseDTO(Employee employee);
 
     public Set<Role> mapRoles(Set<Long> roleIds) {
@@ -77,6 +78,9 @@ public abstract class EmployeeMapper {
         if (dto.getJobPositionId() != null) {
             JobPosition jobPosition = jobPositionRepository.findById(dto.getJobPositionId())
                     .orElseThrow(() -> new ResourceNotFoundException("Job position not found"));
+            if (jobPosition.getLevel() < 1 || jobPosition.getLevel() > 5) {
+                throw new IllegalArgumentException("Job position level must be between 1 and 5");
+            }
             employee.setJobPosition(jobPosition);
         }
 

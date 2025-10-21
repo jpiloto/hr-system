@@ -10,10 +10,12 @@ import com.hrapp.hrsystem.repository.*;
 import com.hrapp.hrsystem.service.EmployeeService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.awaitility.Awaitility.await;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +38,7 @@ public class DataSeeder {
     private final EmployeeService employeeService;
     private final EmployeeCreatedEventMapper eventMapper;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final Environment environment;
 
 
     @Bean
@@ -46,27 +50,36 @@ public class DataSeeder {
                                       PasswordEncoder passwordEncoder,
                                       KafkaTemplate<String, String> kafkaTemplate) {
         return args -> {
+            // Smart environment detection
+            boolean isLocalProfile = Arrays.asList(environment.getActiveProfiles()).contains("local");
+            String kafkaHost = environment.getProperty("spring.kafka.bootstrap-servers");
+            boolean isLocalKafka = kafkaHost != null && kafkaHost.contains("localhost");
 
-            // Wait until Kafka is ready (e.g., topic exists or producer can send)
-//            await()
-//                    .atMost(10, TimeUnit.SECONDS)
-//                    .pollInterval(1, TimeUnit.SECONDS)
-//                    .until(() -> kafkaTemplate != null && kafkaTemplate.getProducerFactory() != null);
+            log.info("Active profiles: {}", Arrays.toString(environment.getActiveProfiles()));
+            log.info("Kafka bootstrap servers: {}", kafkaHost);
 
-            await()
-                    .atMost(10, TimeUnit.SECONDS)
-                    .pollInterval(1, TimeUnit.SECONDS)
-                    .until(() -> {
-                        try {
-                            kafkaTemplate.send("employee.created", "ping").get();
-                            return true;
-                        } catch (Exception e) {
-                            return false;
-                        }
-                    });
+            if (!(isLocalProfile || isLocalKafka)) {
+                try {
+                    await()
+                            .atMost(10, TimeUnit.SECONDS)
+                            .pollInterval(1, TimeUnit.SECONDS)
+                            .until(() -> {
+                                try {
+                                    kafkaTemplate.send("employee.created", "ping").get();
+                                    return true;
+                                } catch (Exception e) {
+                                    log.warn("Kafka ping failed: {}", e.getMessage());
+                                    return false;
+                                }
+                            });
 
-            log.info("Kafka is ready. Proceeding with data seeding...");
-
+                    log.info("Kafka is ready. Proceeding with data seeding...");
+                } catch (Exception e) {
+                    log.warn("Kafka not ready after Awaitility timeout. Proceeding anyway.");
+                }
+            } else {
+                log.info("Local dev detected. Skipping Kafka Awaitility.");
+            }
 
 
             // Seed test user
@@ -99,6 +112,8 @@ public class DataSeeder {
                     JobPosition.builder()
                             .title("Software Engineer")
                             .description("Develops and maintains backend systems")
+                            .level(4)
+                            .department(engineering)
                             .build()
             );
 
@@ -106,6 +121,8 @@ public class DataSeeder {
                     JobPosition.builder()
                             .title("HR Specialist")
                             .description("Manages employee relations and recruitment")
+                            .level(2)
+                            .department(hr)
                             .build()
             );
 
@@ -113,6 +130,8 @@ public class DataSeeder {
                     JobPosition.builder()
                             .title("Financial Analyst")
                             .description("Analyzes financial data and prepares reports")
+                            .level(3)
+                            .department(finance)
                             .build()
             );
 

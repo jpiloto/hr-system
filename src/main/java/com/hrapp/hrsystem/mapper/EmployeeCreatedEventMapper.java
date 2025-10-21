@@ -17,7 +17,8 @@ public class EmployeeCreatedEventMapper {
                 dto.getHireDate(),
                 dto.getDepartmentId(),
                 dto.getRoleIds(),
-                dto.getJobPositionTitle()
+                dto.getJobPositionTitle(),
+                dto.getJobPositionLevel()
         );
     }
 }

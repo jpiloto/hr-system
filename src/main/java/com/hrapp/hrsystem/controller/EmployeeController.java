@@ -23,15 +23,15 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
     private final EmployeeEventProducer eventProducer;
-
-    @Autowired
-    private EmployeeCreatedEventMapper eventMapper;
+    private final EmployeeCreatedEventMapper eventMapper;
 
 
-
-    public EmployeeController(EmployeeService employeeService, EmployeeEventProducer eventProducer) {
+    public EmployeeController(EmployeeService employeeService,
+                              EmployeeEventProducer eventProducer,
+                              EmployeeCreatedEventMapper eventMapper) {
         this.employeeService = employeeService;
         this.eventProducer = eventProducer;
+        this.eventMapper = eventMapper;
     }
 
     @GetMapping
