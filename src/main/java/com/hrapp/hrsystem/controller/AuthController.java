@@ -2,8 +2,11 @@ package com.hrapp.hrsystem.controller;
 
 import com.hrapp.hrsystem.dto.AuthRequest;
 import com.hrapp.hrsystem.service.JwtService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +26,19 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody AuthRequest request) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
-        authManager.authenticate(authentication);
+    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+        try {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    request.getUsername(), request.getPassword());
+            authManager.authenticate(authentication);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        return jwtService.generateToken(userDetails);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+            String token = jwtService.generateToken(userDetails);
+            return ResponseEntity.ok(token);
+        } catch (AuthenticationException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed: " + ex.getMessage());
+        }
     }
 }
