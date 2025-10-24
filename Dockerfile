@@ -10,9 +10,11 @@ COPY . .
 # Build the project
 RUN ./mvnw clean package -DskipTests
 
-# Run the application
-CMD ["java", "-jar", "target/hr-system-0.0.1-SNAPSHOT.jar"]
+# Copy the built JAR into the container
+RUN cp target/hr-system-0.0.1-SNAPSHOT.jar app.jar
 
-#./mvnw clean package
-#docker build -t hr-system .
-#docker run -p 8080:8080 hr-system
+# Expose the application port
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
